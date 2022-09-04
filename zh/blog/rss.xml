@@ -4,36 +4,8 @@
         <title>IFC.js Blog</title>
         <link>https://IFCjs.github.io/blog</link>
         <description>IFC.js Blog</description>
-        <lastBuildDate>Wed, 01 Dec 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Oct 2015 23:29:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
-        <item>
-            <title><![CDATA[为什么IFC不起作用]]></title>
-            <link>https://IFCjs.github.io/info/zh/blog/Why IFC doesnt work</link>
-            <guid>Why IFC doesnt work</guid>
-            <pubDate>Wed, 01 Dec 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[在不同供应商的软件之间进行协作，怎么会这么困难呢？]]></description>
-        </item>
-        <item>
-            <title><![CDATA[在30分钟内建立一个CDE]]></title>
-            <link>https://IFCjs.github.io/info/zh/blog/Build a CDE in 30 minutes</link>
-            <guid>Build a CDE in 30 minutes</guid>
-            <pubDate>Mon, 27 Sep 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[所有的大公司都在销售他们的 CDE。你为什么不做你自己的 CDE 呢？]]></description>
-        </item>
-        <item>
-            <title><![CDATA[我们需要的BIM]]></title>
-            <link>https://IFCjs.github.io/info/zh/blog/prometheus</link>
-            <guid>prometheus</guid>
-            <pubDate>Tue, 27 Jul 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[有时，获得你所需要的东西的唯一途径是自己动手。]]></description>
-        </item>
-        <item>
-            <title><![CDATA[你好，IFC.js!]]></title>
-            <link>https://IFCjs.github.io/info/zh/blog/Open BIM</link>
-            <guid>Open BIM</guid>
-            <pubDate>Sat, 17 Jul 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[我们是谁，我们为什么这样做。]]></description>
-        </item>
     </channel>
 </rss>

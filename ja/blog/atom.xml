@@ -2,37 +2,9 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://IFCjs.github.io/blog</id>
     <title>IFC.js Blog</title>
-    <updated>2021-12-01T00:00:00.000Z</updated>
+    <updated>2015-10-25T23:29:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://IFCjs.github.io/blog"/>
     <subtitle>IFC.js Blog</subtitle>
     <icon>https://IFCjs.github.io/img/favicon.ico</icon>
-    <entry>
-        <title type="html"><![CDATA[IFCがうまくいかない理由]]></title>
-        <id>Why IFC doesnt work</id>
-        <link href="https://IFCjs.github.io/info/ja/blog/Why IFC doesnt work"/>
-        <updated>2021-12-01T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[異なるベンダーのソフトウェア間での共同作業は、どうしてこんなに難しいのでしょうか？]]></summary>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[30分でCDEを構築]]></title>
-        <id>Build a CDE in 30 minutes</id>
-        <link href="https://IFCjs.github.io/info/ja/blog/Build a CDE in 30 minutes"/>
-        <updated>2021-09-27T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[大手企業がこぞって CDE を販売しています。あなたも自分の CDE を作ってみませんか？]]></summary>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[求められるBIMとは]]></title>
-        <id>prometheus</id>
-        <link href="https://IFCjs.github.io/info/ja/blog/prometheus"/>
-        <updated>2021-07-27T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[必要なものを手に入れるには、自分でやるしかないこともあります。]]></summary>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[こんにちは、IFC.jsです。]]></title>
-        <id>Open BIM</id>
-        <link href="https://IFCjs.github.io/info/ja/blog/Open BIM"/>
-        <updated>2021-07-17T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA["我々は何者か？" "なぜこれをするのか？]]></summary>
-    </entry>
 </feed>

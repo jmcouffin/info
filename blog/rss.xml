@@ -4,36 +4,8 @@
         <title>IFC.js Blog</title>
         <link>https://IFCjs.github.io/blog</link>
         <description>IFC.js Blog</description>
-        <lastBuildDate>Wed, 01 Dec 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Oct 2015 23:29:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
-        <item>
-            <title><![CDATA[Why IFC doesn't work]]></title>
-            <link>https://IFCjs.github.io/info/blog/Why IFC doesnt work</link>
-            <guid>Why IFC doesnt work</guid>
-            <pubDate>Wed, 01 Dec 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[How is it so difficult to collaborate between software from different vendors?]]></description>
-        </item>
-        <item>
-            <title><![CDATA[Build a CDE in 30 minutes]]></title>
-            <link>https://IFCjs.github.io/info/blog/Build a CDE in 30 minutes</link>
-            <guid>Build a CDE in 30 minutes</guid>
-            <pubDate>Mon, 27 Sep 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[All the big companies are selling their CDE. Why don't YOU make your own CDE?]]></description>
-        </item>
-        <item>
-            <title><![CDATA[The BIM that we need]]></title>
-            <link>https://IFCjs.github.io/info/blog/prometheus</link>
-            <guid>prometheus</guid>
-            <pubDate>Tue, 27 Jul 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[Sometimes the only way to get what you need is to do it yourself.]]></description>
-        </item>
-        <item>
-            <title><![CDATA[Hello IFC.js!]]></title>
-            <link>https://IFCjs.github.io/info/blog/Open BIM</link>
-            <guid>Open BIM</guid>
-            <pubDate>Sat, 17 Jul 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[Who we are and why we do this.]]></description>
-        </item>
     </channel>
 </rss>
