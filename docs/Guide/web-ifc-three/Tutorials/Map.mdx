@@ -1,0 +1,320 @@
+---
+title: 🗺️ Map
+sidebar_position: 7
+---
+
+import { IfcAlert } from "@site/src/components/Alert/Alert";
+import { IfcCard } from "@site/src/components/Card/InfoCard";
+import { Scene } from "@site/src/components/Scene/Scene";
+
+## Introduction
+
+The goal of this section is to allow us to **view and interact with our models inside a map**
+
+We'll display the subsets of our model highlighted when the mouse hovers over them at the latitude, and longitude we put it.
+
+🌎 There are several map libraries out there. It's impossible to cover all of them. Here we use <a href="https://maplibre.org/maplibre-gl-js-docs/api/">Maplibre GL JS</a> which is a library that fork from <a href="https://docs.mapbox.com/mapbox-gl-js/">Mapbox GL JS</a>, so they're similar.
+I wondered if use Mapbox or Maplibre, I finally decided to go with Maplibre on this tutorial because this doesn't require any registration or access token.
+
+<IfcCard>
+  😄 Talk is cheap. Show me the code 💻 <a href="https://github.com/IFCjs/hello-world/tree/main/examples/web-ifc-three/map-highlighting-single">Github repo</a>
+</IfcCard>
+
+## How to do it
+
+### Groundwork
+
+🏃 We'll start running with a simple map instance, but do check out the <a href="https://maplibre.org/maplibre-gl-js-docs/example/">examples</a> or the <a href="https://maplibre.org/maplibre-gl-js-docs">documentation</a> for more **in-depth guides** and sweet **examples**.
+
+Let's first load the Maplibre dependencies — in this guide we'll just add them with HTML tags.
+
+```html
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://unpkg.com/maplibre-gl@3.0.1/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.0.1/dist/maplibre-gl.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Then add a simple `div` to hold our map: !-->
+    <div id="map"></div>
+    <!-- we're using rollup to bundle our code, so this bundle.js is the result of the bundling process. !-->
+    <script src="bundle.js"></script>
+  </body>
+</html>
+```
+
+#### styles.css file is just to make the map fill the entire screen.
+
+```css
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+```
+
+Now let's start with our JavaScript code by importing the dependencies we'll need.
+
+```js
+import { Matrix4, Vector3, AmbientLight, PerspectiveCamera, Scene, WebGLRenderer, MeshLambertMaterial, Group } from "three";
+import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from "three-mesh-bvh";
+import { IFCLoader } from "web-ifc-three/IFCLoader";
+// import { RaycastMap } from "./RaycastMap";
+```
+
+If you get to notice the commented line, we'll uncomment it and use it later.
+
+### Init map
+
+With our structure in place, let's initialize our map 🗺️.
+
+```js
+const map = new maplibregl.Map({
+  container: "map",
+  style: {
+    version: 8,
+    sources: {
+      osm: {
+        type: "raster",
+        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+        tileSize: 256,
+        attribution: "&copy; OpenStreetMap Contributors",
+      },
+    },
+    layers: [
+      {
+        id: "osm",
+        type: "raster",
+        source: "osm",
+      },
+    ],
+  },
+  zoom: 14,
+  center: [13.4453, 52.491],
+  pitch: 75,
+  bearing: -80,
+  hash: true,
+  maxZoom: 24,
+  maxPitch: 75,
+  antialias: true,
+});
+```
+
+<IfcAlert>
+  If you choose Mapbox, you'll must make a <a href="https://account.mapbox.com/auth/signup/">Mapbox account</a> to get your own API key. 🗝️
+  <br />
+  Choosing Maplibre, it works without registration.
+</IfcAlert>
+
+Now we have our map, let's add our model to it.
+
+### Prepping our model
+
+📐 In order for Mapbox to display our model correctly, we need to define our **position, rotation, and scale** in map terms.
+
+```js
+// Be careful it's Longitude, Latitude. Mapbox/Maplibre uses Latitude, and Longitude on its url, which can be confusing.
+const modelOrigin = [13.4453, 52.491];
+const modelAltitude = 0;
+
+const modelAsMercatorCoordinate = maplibregl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
+
+const camera = new PerspectiveCamera();
+
+const cameraTransform = new Matrix4()
+  // Mapbox gl uses a right-handed co-ordinate system:
+  .makeTranslation(modelAsMercatorCoordinate.x, modelAsMercatorCoordinate.y, modelAsMercatorCoordinate.z)
+  .scale(new Vector3(1, -1, 1));
+```
+
+We'll also need to import our IFC file, so let's add it to our `public` or equivalent folder. We're using <a hrfe="https://github.com/IFCjs/hello-world/blob/main/IFC/01.ifc">01.ifc</a> for this example.
+
+### Setting the scene
+
+🗺 Maplibre/Mapbox allow us to draw 3D stuff using a layer of `custom` type. We'll be use it to put our IFC model on it.
+
+Custom layers layer will call the `onAdd` function that we will use to **load, rotate and scale our IFC model** and put a **light** to the scene.
+add
+as well as a `render` function to apply our **position, rotation and scale** changes.
+
+```js
+const scene = new Scene();
+const ifcLoader = new IFCLoader();
+const ifcModelsGroup = new Group();
+scene.add(ifcModelsGroup);
+
+// This renderer will draw our Three.js scene on top of the map.
+const renderer = new WebGLRenderer({
+  canvas: map.getCanvas(),
+  antialias: true,
+});
+renderer.autoClear = false;
+
+const customLayer = {
+  id: "3d-model",
+  type: "custom",
+  renderingMode: "3d",
+
+  onAdd: function () {
+    ifcLoader.ifcManager.setWasmPath("../../../");
+    ifcLoader.load("../../../IFC/01.ifc", function (model) {
+      ifcModelsGroup.add(model);
+      map.flyTo({
+        zoom: 18.4,
+      });
+    });
+
+    // We must rotate on the X axis 90° counterclockwise is to make the model face up.
+    // The angle is in radians counterclockwise.
+    ifcModelsGroup.rotateX(Math.PI / 2);
+
+    // The Y rotation is to make the model point in the correct compass direction.
+    // In this example, we rotate 45° making the building face the northeast.
+    ifcModelsGroup.rotateY(Math.PI / 4);
+
+    // The scale is to make the model fit the map.
+    ifcModelsGroup.scale.setScalar(modelAsMercatorCoordinate.meterInMercatorCoordinateUnits());
+
+    const ambientLight = new AmbientLight(0xffffff);
+
+    scene.add(ambientLight);
+  },
+  // The render function essentially re-renders the scene every time the map is moved.
+  // We can just copy and paste it.
+  render: function (gl, matrix) {
+    camera.projectionMatrix = new Matrix4().fromArray(matrix).multiply(cameraTransform);
+    renderer.resetState();
+    renderer.render(scene, camera);
+    map.triggerRepaint();
+  },
+};
+```
+
+The last thing to do is simply add our `customLayer` when our map style is loaded.
+
+```js
+map.on("style.load", () => {
+  map.addLayer(customLayer);
+
+  // raycastHighlightStart();
+});
+```
+
+### The model without interaction
+
+<a href="https://github.com/IFCjs/hello-world/tree/main/examples/web-ifc-three/map">Github repo</a>
+<Scene link={"https://ifcjs.github.io/hello-world/examples/web-ifc-three/map/"} />
+
+Now we have our model on the map, but we can't interact with it yet. Let's fix that.
+
+---
+
+### Interact with our model
+
+Adding the following function will allow us to interact with our model. When mouse is over a part of the model, it will be highlighted.
+
+```js
+function raycastHighlightStart() {
+  ifcLoader.ifcManager.setupThreeMeshBVH(computeBoundsTree, disposeBoundsTree, acceleratedRaycast);
+  const raycaster = new RaycastMap(map, camera);
+
+  let preselect = { modelID: -1, subsetID: -1 };
+
+  const preselectMat = new MeshLambertMaterial({
+    transparent: true,
+    opacity: 0.6,
+    color: 0xff88ff,
+    depthTest: false,
+  });
+
+  map.on("mousemove", ({ point }) => {
+    const intersects = raycaster.intersectObjectsFromPoint(point, ifcModelsGroup.children);
+
+    const found = intersects[0];
+    const ifc = ifcLoader.ifcManager;
+    if (found) {
+      const index = found.faceIndex;
+      const geometry = found.object.geometry;
+      const id = ifc.getExpressId(geometry, index);
+
+      if (preselect.modelID === found.object.modelID && preselect.subsetID === id) {
+        return;
+      }
+      preselect.modelID = found.object.modelID;
+      preselect.subsetID = id;
+      ifcLoader.ifcManager.createSubset({
+        modelID: preselect.modelID,
+        ids: [id],
+        material: preselectMat,
+        scene: ifcModelsGroup,
+        removePrevious: true,
+      });
+
+      ifc.getItemProperties(preselect.modelID, id).then((props) => {
+        // props contains the properties of the selected element
+        console.log(props?.Name?.value);
+      });
+    } else {
+      ifc.removeSubset(preselect.modelID, preselectMat);
+      preselect = { modelID: -1 };
+    }
+  });
+}
+```
+
+<IfcCard icon="⌖" title="Different 3D coordinate system">
+  Maplibre/Mapbox uses a different 3D coordinate system compared to Three.js. Therefore, we need to convert our coordinates. To accomplish this, we have created the following class to assist us.
+  <br />
+  <br />
+  We don't necessarily need to fully understand how it works, but if you're interested, it's as easy as a piece of cake 🤯, and this <a href="https://github.com/mapbox/mapbox-gl-native/wiki/Coordinate-Systems">Coordinate Systems from Long/Lat to Webgl</a> resource is a good starting point to delve into the details.
+</IfcCard>
+
+We need to create the `RaycastMap` file. It will be used to detect when the mouse is over our model.
+
+#### RaycastMap.js
+
+```js
+import { Raycaster, Matrix4, Vector2, Vector3 } from "three";
+
+export class RaycastMap {
+  constructor(map, camera) {
+    this.map = map;
+    this.camera = camera;
+    this.raycaster = new Raycaster();
+    this.raycaster.firstHitOnly = true;
+  }
+
+  intersectObjectsFromPoint(screenPoint, objects) {
+    const { size } = this.map.transform;
+
+    var pointNormalized = new Vector2();
+    pointNormalized.x = (screenPoint.x / size.x) * 2 - 1;
+    pointNormalized.y = 1 - (screenPoint.y / size.y) * 2;
+
+    const camInverseProjection = new Matrix4().copy(this.camera.projectionMatrix).invert();
+
+    const cameraPosition = new Vector3().applyMatrix4(camInverseProjection);
+    const viewDirection = new Vector3(pointNormalized.x, pointNormalized.y, 1).applyMatrix4(camInverseProjection).sub(cameraPosition).normalize();
+
+    this.raycaster.set(cameraPosition, viewDirection);
+
+    return this.raycaster.intersectObjects(objects, true);
+  }
+}
+```
+
+In the beginning, we commented on the RaycastMap import, and at the end, we commented on the `raycastHighlightStart()` function call. Let's uncomment those lines and see what happens.
+
+### The result
+
+<a href="https://github.com/IFCjs/hello-world/tree/main/examples/web-ifc-three/map-highlighting-single">Github repo</a>
+<Scene link={"https://ifcjs.github.io/hello-world/examples/web-ifc-three/map-highlighting-single/"} />
+
+## Next steps
+
+🎉🎉🎉
+Yoohoo! You should now be able to **load and interact with our model into a Map** and place it anywhere in the world you'd like.
